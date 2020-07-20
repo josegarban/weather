@@ -3,7 +3,12 @@ from django.shortcuts import render, redirect
 from .models import City
 from .forms import CityForm
 
+import environ
+
 def index(request):
+    env = environ.Env()
+    environ.Env.read_env()
+
     apikey = env("WEATHER_API")
     units = 'metric'
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units={}&appid={}'
