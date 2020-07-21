@@ -1,4 +1,5 @@
 import requests
+import datetime
 from django.shortcuts import render, redirect
 from .models import City
 from .forms import CityForm
@@ -46,12 +47,14 @@ def index(request):
 
     for city in cities:
         r = requests.get(url.format(city, units, apikey)).json()
-
+        print(r)
         city_weather = {
             'city': city.name,
             'temperature' : r['main']['temp'],
             'description' : r['weather'][0]['description'],
             'icon' : r['weather'][0]['icon'],
+            'country' : r['sys']['country'],
+            'time' : datetime.datetime.now() + datetime.timedelta(seconds = r['timezone']) - datetime.timedelta(seconds = 7200),
         }
         weather_data.append(city_weather)
 
@@ -60,6 +63,7 @@ def index(request):
         'form' : form,
         'message' : message,
         'message_class' : message_class,
+        'units' : units,
         }
     print(weather_data)
 
