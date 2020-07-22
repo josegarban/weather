@@ -13,6 +13,7 @@ def index(request):
     apikey = env("WEATHER_API")
     units = 'metric'
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units={}&appid={}'
+    url_air = 'https://api.openaq.org/v1/latest'
 
     err_msg = ''
     message = ''
@@ -47,6 +48,12 @@ def index(request):
 
     for city in cities:
         r = requests.get(url.format(city, units, apikey)).json()
+
+        try:
+            air = requests.get(url_air).json()[city.name]
+        except:
+            air = "N/A"
+
         print(r)
         city_weather = {
             'city': city.name,
@@ -55,6 +62,7 @@ def index(request):
             'icon' : r['weather'][0]['icon'],
             'country' : r['sys']['country'],
             'time' : datetime.datetime.now() + datetime.timedelta(seconds = r['timezone']) - datetime.timedelta(seconds = 7200),
+            'air' : air,
         }
         weather_data.append(city_weather)
 
